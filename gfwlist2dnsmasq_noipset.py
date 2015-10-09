@@ -4,7 +4,7 @@
 # Generate a list of dnsmasq rules with ipset for gfwlist
 #  
 # Copyright (C) 2014 http://www.shuyz.com   
-# Ref https://github.com/gfwlist/gfwlist   
+# Ref https://code.google.com/p/autoproxy-gfwlist/wiki/Rules    
  
 import urllib2 
 import re
@@ -14,7 +14,7 @@ import base64
 import shutil
  
 mydnsip = '127.0.0.1'
-mydnsport = '5353'
+mydnsport = '5300'
 ipsetname = 'gfwlist'
 # Extra Domain;
 EX_DOMAIN=[ \
@@ -41,8 +41,8 @@ comment_pattern = '^\!|\[|^@@|^\d+\.\d+\.\d+\.\d+'
 domain_pattern = '([\w\-\_]+\.[\w\.\-\_]+)[\/\*]*' 
 tmpfile = '/tmp/gfwlisttmp'
 # do not write to router internal flash directly
-outfile = './dnsmasq_list.conf'
-#outfile = './dnsmasq_list.conf'
+#outfile = '/var/www/wordpress/wp-content/uploads/secured_files/foreign_list.conf'
+outfile = './dnsmasq_noipset_list.conf'
  
 fs =  file(outfile, 'w')
 fs.write('# gfw list ipset rules for dnsmasq\n')
@@ -78,7 +78,6 @@ for line in tfs.readlines():
 				print 'saving ' + domain[0]
 				domainlist.append(domain[0])
 				fs.write('server=/.%s/%s#%s\n'%(domain[0],mydnsip,mydnsport))
-				fs.write('ipset=/.%s/%s\n'%(domain[0],ipsetname))
 		else:
 			print 'no valid domain in this line: ' + line
 					
@@ -86,7 +85,6 @@ tfs.close()
 
 for each in EX_DOMAIN:
 	fs.write('server=/%s/%s#%s\n'%(each,mydnsip,mydnsport))
-	fs.write('ipset=/%s/%s\n'%(each,ipsetname))
 
 print 'write extra domain done'
 
